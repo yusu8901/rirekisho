@@ -20,7 +20,6 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
 # ChatGPTで履歴書の詳細をフォーマットする関数
@@ -83,18 +82,21 @@ st.markdown(f"**スキル:**\n{skills}")
 st.markdown(f"**免許・資格:**\n{licenses}")
 
 
-# 「自己PR文の再生成」ボタンの動作
-if st.button("自己PR文のAI編集"):
-    if personal_statement:
-        personal_statement = get_formatted_text(
-            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
-        )
-    else:
-        personal_statement = get_formatted_text(
-            f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
-        )
+# 「自己PR文のAI生成・編集」ボタンの動作
+# if st.button("自己PR文のAI生成・編集"):
+#     if personal_statement:
+#         formatted_statememt = get_formatted_text(
+#             f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
+#         )
+#     else:
+#         formatted_statement = get_formatted_text(
+#             f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
+#         )
+#         personal_statement = formatted_statement
+    
+#     st.markdown(f"**自己PR:** {formatted_statement}")
 
-st.markdown(f"**自己PR:** {personal_statement}")
+
 
 # 初期設定
 def make(filename):
@@ -282,13 +284,24 @@ def print_string(pdf_canvas):
 
 # Streamlitアプリケーション
 
-st.write("下のボタンをクリックすると、履歴書フォーマットのPDFが生成されます。")
+st.write("下のボタンをクリックすると、履歴書フォーマットのPDFが生成されます。自己PRはAIによって編集されます。")
 
-if st.button("PDFを生成"):
+if st.button("履歴書生成"):
+
+    if personal_statement:
+        formatted_statement = get_formatted_text(
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
+        )
+    else:
+        formatted_statement = get_formatted_text(
+            f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
+        )
+    st.markdown(f"**自己PR:** {formatted_statement}")
+
     def insert_line_breaks(text, line_length=22):
         return '\n'.join([text[i:i+line_length] for i in range(0, len(text), line_length)])
     
-    final_formatted_statement= insert_line_breaks(personal_statement)
+    final_formatted_statement= insert_line_breaks(formatted_statement)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
         filename = tmpfile.name
