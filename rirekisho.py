@@ -155,10 +155,17 @@ st.markdown(f"**電話番号:** {phone}")
 st.markdown(f"**メールアドレス:** {mail}")
 st.markdown(f"**郵便番号:**{post_code}")
 st.markdown(f"**住所:** {address}")
-# st.markdown(f"**学歴:**\n{education}")
-# st.markdown(f"**職歴:**\n{work_experience}")
+st.write("**学歴:**")
+for entry in st.session_state.education:
+    st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{entry['year']}年 {entry['month']}月 - {entry['description']}")
+# データを表示（確認用）
+st.write("**職歴:**")
+for entry in st.session_state.work_experience:
+    st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{entry['year']}年 {entry['month']}月 - {entry['description']}")
 st.markdown(f"**スキル:**\n{skills}")
-# st.markdown(f"**免許・資格:**\n{licenses}")
+st.write("**免許・資格**")
+for entry in st.session_state.licenses:
+    st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{entry['year']}年 {entry['month']}月 - {entry['description']}")
 
 # 初期設定
 def make(filename):
