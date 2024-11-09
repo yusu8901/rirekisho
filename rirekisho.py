@@ -421,3 +421,4 @@ if st.button("履歴書生成"):
                 file_name="resume.pdf",
                 mime="application/pdf"
             )
+
