@@ -12,14 +12,20 @@ Streamlit
 1.リポジトリをクローンする:
 ``` cmd
 git clone https://github.com/yusu8901/rirekisho
-``` 
+```
 
-2.仮想環境を作成する:
+2.rirekishoへ移動：
+```cmd
+cd rirekisho
+```
+
+
+3.仮想環境を作成する:
 ``` cmd
 python -m venv .venv
 ``` 
 
-3.仮想環境をアクティベートする:
+4.仮想環境をアクティベートする:
 
  ``` cmd
 ### Windows command prompt
@@ -32,15 +38,15 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-4.必要な依存関係をインストールする:
+5.必要な依存関係をインストールする:
 ``` cmd
 pip install -r requirements.txt
 ``` 
-5.'.env.sample'ファイルを'.env'ファイルに変更後、ファイル内の"YOUR_API_KEY_HERE"を取得したOpenAI APIキーで上書きする:
+6.'.env.sample'ファイルを'.env'ファイルに変更後、ファイル内の"YOUR_API_KEY_HERE"を取得したOpenAI APIキーで上書きする:
 ``` cmd
 OPENAI_API_KEY="YOUR_API_KEY_HERE"
 ``` 
-6.Streamlitアプリケーションを実行する:
+7.Streamlitアプリケーションを実行する:
 ``` cmd
 streamlit run rirekisho.py
 ``` 
