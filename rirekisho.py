@@ -72,7 +72,7 @@ birthdate_day = col3.number_input("日", min_value=1, max_value=31, step=1)
 age = col4.number_input("年齢", min_value=0, max_value=100,step=1)
 phone = st.text_input("電話番号")
 mail = st.text_input("メールアドレス")
-post_code=st.text_input("郵便番号")
+post_code=st.text_input("郵便番号(○○○-○○○○)")
 address = st.text_input("住所")
 # 学歴入力欄
 st.write("学歴")
