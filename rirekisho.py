@@ -1,6 +1,5 @@
 import streamlit as st
-# from reportlab.lib.pagesizes import A4
-# from reportlab.pdfgen import canvas
+
 from io import BytesIO
 from PIL import Image
 import openai
@@ -17,6 +16,8 @@ import requests
 from bs4 import BeautifulSoup
 
 import tempfile
+
+from datetime import date
 
 # OpenAI APIキーを設定 (実際のキーを 'your-api-key' の部分に入れてください)
 from dotenv import load_dotenv
@@ -62,7 +63,13 @@ hurigana= st.text_input("ふりがな")
 name = st.text_input("氏名")
 options =['男','女']
 sex = st.selectbox("性別",options)
-birthdate = st.date_input("生年月日")
+
+st.write("生年月日")
+col1, col2, col3,col4 = st.columns([1, 1, 1, 1])
+birthdate_year = col1.number_input("年", min_value=1900, max_value=2030, step=1)
+birthdate_month = col2.number_input("月", min_value=1, max_value=12, step=1)
+birthdate_day = col3.number_input("日", min_value=1, max_value=31, step=1)
+age = col4.number_input("年齢", min_value=0, max_value=100,step=1)
 phone = st.text_input("電話番号")
 mail = st.text_input("メールアドレス")
 post_code=st.text_input("郵便番号")
@@ -139,9 +146,14 @@ if st.button("免許・資格を追加") and st.session_state.licenses_count < 1
 while len(st.session_state.licenses) < st.session_state.licenses_count:
     st.session_state.licenses.append({"year": "", "month": "", "description": ""})
 
-
+commuting_hours = st.number_input("通勤時間（時間）", min_value=0, max_value=24, step=1)
+commuting_minutes = st.number_input("通勤時間（分）", min_value=0, max_value=55, step=5)
+dependents = st.number_input("扶養家族（人数）", min_value=0, step=1)
+has_partner = st.radio("配偶者", options=["有", "無"])
+partner_support = st.radio("配偶者の扶養義務", options=["有", "無"])
 skills = st.text_area("スキル（例：ソフトウェア、言語）")
 personal_statement = st.text_area("自己PR（自己紹介、志望動機）")
+personal_request = st.text_area("本人希望記入欄（特に待遇・職種・勤務時間・その他についての希望などがあれば記入）")
 
 
 # 収集したデータをユーザーに確認用に表示
@@ -149,8 +161,8 @@ st.write("### 履歴書情報のプレビュー")
 st.markdown(f"**氏名:** {name}")
 st.markdown(f"**ふりがな:** {hurigana}")
 st.markdown(f"**性別:** {sex}")
-st.markdown(f"**生年月日:** {birthdate}")
-
+st.markdown(f"**生年月日:** {birthdate_year}年{birthdate_month}月{birthdate_day}日")
+st.markdown(f"**年齢:** {age}歳")
 st.markdown(f"**電話番号:** {phone}")
 st.markdown(f"**メールアドレス:** {mail}")
 st.markdown(f"**郵便番号:**{post_code}")
@@ -162,10 +174,16 @@ for entry in st.session_state.education:
 st.write("**職歴:**")
 for entry in st.session_state.work_experience:
     st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{entry['year']}年 {entry['month']}月 - {entry['description']}")
+
+st.write(f"**通勤時間:** 　約{commuting_hours}時間 {commuting_minutes}分")
+st.write(f"扶養家族の人数: {dependents}人")
+st.write(f"**配偶者**:　 {has_partner}")
+st.write(f"**配偶者の扶養義務**:　 {partner_support}")
 st.markdown(f"**スキル:**\n{skills}")
 st.write("**免許・資格**")
 for entry in st.session_state.licenses:
     st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;{entry['year']}年 {entry['month']}月 - {entry['description']}")
+st.markdown(f"**本人希望記入欄:** {personal_request}")
 
 # 初期設定
 def make(filename):
@@ -194,7 +212,11 @@ def print_string(pdf_canvas):
     # (2)作成日
     font_size = 10
     pdf_canvas.setFont('HeiseiKakuGo-W5', font_size)
-    pdf_canvas.drawString(285, 770, '    年         月         日現在')
+    # 今日の日付を取得
+    today = date.today()
+    # 年 月 日形式でフォーマット
+    formatted_date = today.strftime("%Y年 %m月 %d日")
+    pdf_canvas.drawString(285, 770, f' {formatted_date}現在')
 
     # (3)証明写真
     # tableを作成
@@ -221,7 +243,7 @@ def print_string(pdf_canvas):
     data = [
         [f'ふりがな: {hurigana}', f' {sex}  '],  
         [f'氏名: \n\n　　{name}', ''],
-        [f'生年月日　　{birthdate}　　　　　　　　　　年　　　月　　　日生　（満　　　歳）', '']
+        [f'生年月日　　　　　　　　　{birthdate_year}年　{birthdate_month}月　　{birthdate_day}日生　（満　　{age}歳）', '']
     ]
 
     table = Table(data, colWidths=(100*mm, 20*mm), rowHeights=(7*mm, 20*mm, 7*mm))
@@ -336,13 +358,13 @@ def print_string(pdf_canvas):
     # (8)そのほか
     data = [
             [f'志望の動機、自己PR、趣味、特技など\n {final_formatted_statement}','通勤時間',''],
-            ['','                        約　　　　時間　　　　分',''],
+            ['',f'                        約　{commuting_hours}時間　{commuting_minutes}分',''],
             ['','扶養家族（配偶者を除く）',''],
-            ['','                              　　　　    　　　　人',''],
+            ['',f'                              　　　　    　{dependents}人',''],
             ['','配偶者','配偶者の扶養義務'],
-            ['','       有    ・    無','       有    ・    無'],
+            ['',f'       {has_partner}',f'       {partner_support}'],
             ['本人希望記入欄（特に待遇・職種・勤務時間・その他についての希望などがあれば記入）','',''],
-            ['','','']
+            [f'{final_personal_request}','','']
 
         ]
     table = Table(data, colWidths=(90*mm, 35*mm, 35*mm), rowHeights=(8*mm, 10*mm, 8*mm, 10*mm, 8*mm, 10*mm, 8*mm, 50*mm))
@@ -357,6 +379,7 @@ def print_string(pdf_canvas):
             ('LINEABOVE', (0, 7), (2, 7), 1, colors.black),
             ('VALIGN', (0, 0), (2, 5), 'TOP'),
             ('VALIGN', (0, 6), (2, 6), 'MIDDLE'),
+            ('VALIGN', (0, 7), (2, 7), 'TOP'),
         ]))
     table.wrapOn(pdf_canvas, 20*mm, 20*mm)
     table.drawOn(pdf_canvas, 20*mm, 20*mm)
@@ -381,10 +404,11 @@ if st.button("履歴書生成"):
         )
     st.markdown(f"**自己PR:** {formatted_statement}")
 
-    def insert_line_breaks(text, line_length=22):
+    def insert_line_breaks(text, line_length):
         return '\n'.join([text[i:i+line_length] for i in range(0, len(text), line_length)])
     
-    final_formatted_statement= insert_line_breaks(formatted_statement)
+    final_formatted_statement= insert_line_breaks(formatted_statement,22)
+    final_personal_request = insert_line_breaks(personal_request,43)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
         filename = tmpfile.name
