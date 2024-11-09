@@ -13,6 +13,9 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 
+import requests
+from bs4 import BeautifulSoup
+
 import tempfile
 
 # OpenAI APIキーを設定 (実際のキーを 'your-api-key' の部分に入れてください)
@@ -30,12 +33,30 @@ def get_formatted_text(prompt):
     )
     return response.choices[0].message['content']
 
+
+#ホームページ情報取得
+def get_page_text(url):
+    try:
+        # 指定されたURLにリクエストを送信
+        response = requests.get(url)
+        response.raise_for_status()  # ステータスコードがエラーの場合、例外を発生
+
+        # HTMLを解析してテキストを取得
+        soup = BeautifulSoup(response.text, 'html.parser')
+        page_text = soup.get_text(strip=True)  # ページ全体のテキストを取得
+        return page_text
+
+    except requests.exceptions.RequestException as e:
+        return f"エラーが発生しました: {e}"
+
+
+
 # Streamlitインターフェース
 st.title("履歴書生成AI")
 st.write("入力に基づいて履歴書を作成するお手伝いをします。")
 
 # 初期入力の収集
-company_homepage = st.text_input("志望先のホームページ")
+company_homepage = st.text_input("志望先の会社概要ページURL")
 profile_picture = st.file_uploader("プロフィール写真をアップロード", type=["jpg", "jpeg", "png"])
 hurigana= st.text_input("ふりがな")
 name = st.text_input("氏名")
@@ -287,14 +308,15 @@ def print_string(pdf_canvas):
 st.write("下のボタンをクリックすると、履歴書フォーマットのPDFが生成されます。自己PRはAIによって編集されます。")
 
 if st.button("履歴書生成"):
+    about_company = get_page_text(company_homepage)
 
     if personal_statement:
         formatted_statement = get_formatted_text(
-            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。編集前文「 {personal_statement}」　志望先会社概要「{about_company}"
         )
     else:
         formatted_statement = get_formatted_text(
-            f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章を200文字程度で生成してください。{skills}{licenses}{about_company}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
         )
     st.markdown(f"**自己PR:** {formatted_statement}")
 

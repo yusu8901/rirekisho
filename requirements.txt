@@ -2,3 +2,5 @@ openai == 0.27.0
 streamlit
 reportlab
 python-dotenv
+requests
+beautifulsoup4
