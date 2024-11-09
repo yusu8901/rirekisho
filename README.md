@@ -7,9 +7,6 @@ Python
 
 Streamlit
 
-reportlab
-
-python-dotenv
 
 ### インストール手順
 1.リポジトリをクローンする:
