@@ -56,7 +56,7 @@ st.title("履歴書生成AI")
 st.write("入力に基づいて履歴書を作成するお手伝いをします。")
 
 # 初期入力の収集
-company_homepage = st.text_input("志望先の会社概要ページURL")
+company_homepage = st.text_input("志望先の会社理念ページURL")
 profile_picture = st.file_uploader("プロフィール写真をアップロード", type=["jpg", "jpeg", "png"])
 hurigana= st.text_input("ふりがな")
 name = st.text_input("氏名")
@@ -72,18 +72,6 @@ work_experience = st.text_area("職歴（例：職種、会社、期間）")
 skills = st.text_area("スキル（例：ソフトウェア、言語）")
 licenses = st.text_area("免許・資格")
 personal_statement = st.text_area("自己PR（自己紹介、志望動機）")
-
-# # ChatGPTを使用して自己PRをフォーマット（初回実行のみ）
-# if "formatted_statement" not in st.session_state:
-#     if personal_statement:
-#         personal_statement = get_formatted_text(
-#             f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
-#         )
-#     else:
-#         personal_statement = get_formatted_text(
-#             f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
-#         )
-
 
 
 # 収集したデータをユーザーに確認用に表示
@@ -101,23 +89,6 @@ st.markdown(f"**学歴:**\n{education}")
 st.markdown(f"**職歴:**\n{work_experience}")
 st.markdown(f"**スキル:**\n{skills}")
 st.markdown(f"**免許・資格:**\n{licenses}")
-
-
-# 「自己PR文のAI生成・編集」ボタンの動作
-# if st.button("自己PR文のAI生成・編集"):
-#     if personal_statement:
-#         formatted_statememt = get_formatted_text(
-#             f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。: {personal_statement}"
-#         )
-#     else:
-#         formatted_statement = get_formatted_text(
-#             f"履歴書の自己PR欄に書く文章を200文字程度で生成してください。{skills}{licenses}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
-#         )
-#         personal_statement = formatted_statement
-    
-#     st.markdown(f"**自己PR:** {formatted_statement}")
-
-
 
 # 初期設定
 def make(filename):
@@ -150,17 +121,24 @@ def print_string(pdf_canvas):
 
     # (3)証明写真
     # tableを作成
-    data = [
-            ['    証明写真'],
-        ]
-    table = Table(data, colWidths=30*mm, rowHeights=40*mm) # tableの大きさ
-    table.setStyle(TableStyle([                              # tableの装飾
-            ('FONT', (0, 0), (0, 0), 'HeiseiKakuGo-W5', 12), # フォントサイズ
-            ('BOX', (0, 0), (0, 0), 1, colors.black),        # 罫線
-            ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),            # フォント位置
-        ]))
-    table.wrapOn(pdf_canvas, 145*mm, 235*mm) # table位置
-    table.drawOn(pdf_canvas, 145*mm, 235*mm)
+    if profile_picture:
+        image = Image.open(profile_picture)
+        image = image.resize((100, 130))  # 画像サイズを調整
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_image_file:
+            image.save(temp_image_file.name)
+            pdf_canvas.drawImage(temp_image_file.name, 145*mm, 235*mm, width=30*mm, height=40*mm)
+    else:
+        data = [
+                [f'    {profile_picture}'],
+            ]
+        table = Table(data, colWidths=30*mm, rowHeights=40*mm) # tableの大きさ
+        table.setStyle(TableStyle([                              # tableの装飾
+                ('FONT', (0, 0), (0, 0), 'HeiseiKakuGo-W5', 12), # フォントサイズ
+                ('BOX', (0, 0), (0, 0), 1, colors.black),        # 罫線
+                ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),            # フォント位置
+            ]))
+        table.wrapOn(pdf_canvas, 145*mm, 235*mm) # table位置
+        table.drawOn(pdf_canvas, 145*mm, 235*mm)
 
     # (4)プロフィール
     data = [
