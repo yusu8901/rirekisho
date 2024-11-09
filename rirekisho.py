@@ -67,10 +67,80 @@ phone = st.text_input("電話番号")
 mail = st.text_input("メールアドレス")
 post_code=st.text_input("郵便番号")
 address = st.text_input("住所")
-education = st.text_area("学歴（例：大学、学位、卒業年）")
-work_experience = st.text_area("職歴（例：職種、会社、期間）")
+# 学歴入力欄
+st.write("学歴")
+if "education" not in st.session_state:
+    st.session_state.education = [{"year": "", "month": "", "description": ""}]
+if "education_count" not in st.session_state:
+    st.session_state.education_count = 1  # 初期値は1つ目のエントリ
+
+# 学歴入力欄の表示
+for i, education_entry in enumerate(st.session_state.education):
+    col1, col2, col3 = st.columns([1, 1, 2])
+    education_entry["year"] = col1.text_input(f"学歴 {i + 1} - 年", value=education_entry["year"], key=f"education_year_{i}")
+    education_entry["month"] = col2.text_input(f"学歴 {i + 1} - 月", value=education_entry["month"], key=f"education_month_{i}")
+    education_entry["description"] = col3.text_input(f"学歴 {i + 1} - 詳細", value=education_entry["description"], key=f"education_description_{i}")
+
+# ボタンが押されたときの処理
+if st.button("学歴を追加") and st.session_state.education_count < 19:
+    st.session_state.education.append({"year": "", "month": "", "description": ""})
+    st.session_state.education_count += 1  # カウントをインクリメント
+
+# 必要なエントリ数に満たない場合、空のエントリを追加
+while len(st.session_state.education) < st.session_state.education_count:
+    st.session_state.education.append({"year": "", "month": "", "description": ""})
+
+
+# 職歴入力欄
+st.write("職歴")
+if "work_experience" not in st.session_state:
+    st.session_state.work_experience = [{"year": "", "month": "", "description": ""}]
+if "work_experience_count" not in st.session_state:
+    st.session_state.work_experience_count = 1  # 初期値は1つ目のエントリ
+
+# 職歴入力欄の表示
+for i, work_entry in enumerate(st.session_state.work_experience):
+    col1, col2, col3 = st.columns([1, 1, 2])
+    work_entry["year"] = col1.text_input(f"職歴 {i + 1} - 年", value=work_entry["year"], key=f"work_year_{i}")
+    work_entry["month"] = col2.text_input(f"職歴 {i + 1} - 月", value=work_entry["month"], key=f"work_month_{i}")
+    work_entry["description"] = col3.text_input(f"職歴 {i + 1} - 詳細", value=work_entry["description"], key=f"work_description_{i}")
+
+# ボタンが押されたときの処理
+if st.button("職歴を追加") and st.session_state.work_experience_count < 8:
+    st.session_state.work_experience.append({"year": "", "month": "", "description": ""})
+    st.session_state.work_experience_count += 1  # カウントをインクリメント
+
+# 必要なエントリ数に満たない場合、空のエントリを追加
+while len(st.session_state.work_experience) < st.session_state.work_experience_count:
+    st.session_state.work_experience.append({"year": "", "month": "", "description": ""})
+
+
+
+# 免許・資格入力欄
+st.write("免許・資格")
+if "licenses" not in st.session_state:
+    st.session_state.licenses = [{"year": "", "month": "", "description": ""}]
+if "licenses_count" not in st.session_state:
+    st.session_state.licenses_count = 1  # 初期値は1つ目のエントリ
+
+# 免許・資格入力欄の表示
+for i, license_entry in enumerate(st.session_state.licenses):
+    col1, col2, col3 = st.columns([1, 1, 2])
+    license_entry["year"] = col1.text_input(f"免許・資格 {i + 1} - 年", value=license_entry["year"], key=f"license_year_{i}")
+    license_entry["month"] = col2.text_input(f"免許・資格 {i + 1} - 月", value=license_entry["month"], key=f"license_month_{i}")
+    license_entry["description"] = col3.text_input(f"免許・資格 {i + 1} - 詳細", value=license_entry["description"], key=f"license_description_{i}")
+
+# ボタンが押されたときの処理
+if st.button("免許・資格を追加") and st.session_state.licenses_count < 19:
+    st.session_state.licenses.append({"year": "", "month": "", "description": ""})
+    st.session_state.licenses_count += 1  # カウントをインクリメント
+
+# 必要なエントリ数に満たない場合、空のエントリを追加
+while len(st.session_state.licenses) < st.session_state.licenses_count:
+    st.session_state.licenses.append({"year": "", "month": "", "description": ""})
+
+
 skills = st.text_area("スキル（例：ソフトウェア、言語）")
-licenses = st.text_area("免許・資格")
 personal_statement = st.text_area("自己PR（自己紹介、志望動機）")
 
 
@@ -85,10 +155,10 @@ st.markdown(f"**電話番号:** {phone}")
 st.markdown(f"**メールアドレス:** {mail}")
 st.markdown(f"**郵便番号:**{post_code}")
 st.markdown(f"**住所:** {address}")
-st.markdown(f"**学歴:**\n{education}")
-st.markdown(f"**職歴:**\n{work_experience}")
+# st.markdown(f"**学歴:**\n{education}")
+# st.markdown(f"**職歴:**\n{work_experience}")
 st.markdown(f"**スキル:**\n{skills}")
-st.markdown(f"**免許・資格:**\n{licenses}")
+# st.markdown(f"**免許・資格:**\n{licenses}")
 
 # 初期設定
 def make(filename):
@@ -129,7 +199,7 @@ def print_string(pdf_canvas):
             pdf_canvas.drawImage(temp_image_file.name, 145*mm, 235*mm, width=30*mm, height=40*mm)
     else:
         data = [
-                [f'    {profile_picture}'],
+                ['    証明写真'],
             ]
         table = Table(data, colWidths=30*mm, rowHeights=40*mm) # tableの大きさ
         table.setStyle(TableStyle([                              # tableの装飾
@@ -183,30 +253,49 @@ def print_string(pdf_canvas):
     table.wrapOn(pdf_canvas, 20*mm, 178*mm)
     table.drawOn(pdf_canvas, 20*mm, 178*mm)
 
+    # 学歴データの準備（不足するエントリには空データを追加）
+    education_data = []
+    for i in range(19):  # 最大19エントリ
+        if i < len(st.session_state.education):
+            year = st.session_state.education[i]["year"]
+            month = st.session_state.education[i]["month"]
+            description = st.session_state.education[i]["description"]
+            education_data.append([f'{year}', f'{month}', f'{description}'])
+        else:
+            education_data.append(["", "", ""])  # 空データ
+
+    # 職歴データの準備
+    work_experience_data = []
+    for i in range(9):
+        if i < len(st.session_state.work_experience):
+            year = st.session_state.work_experience[i]["year"]
+            month = st.session_state.work_experience[i]["month"]
+            description = st.session_state.work_experience[i]["description"]
+            work_experience_data.append([f'{year}', f'{month}', f'{description}'])
+        else:
+            work_experience_data.append(["", "", ""])
+
+    # 免許・資格データの準備
+    license_data = []
+    for i in range(7):
+        if i < len(st.session_state.licenses):
+            year = st.session_state.licenses[i]["year"]
+            month = st.session_state.licenses[i]["month"]
+            description = st.session_state.licenses[i]["description"]
+            license_data.append([f'{year}', f'{month}', f'{description}'])
+        else:
+            license_data.append(["", "", ""])
+
+
     # (6)学歴・職歴
+
+
     data = [
-            ['        年', '   月', '                                            学歴・職歴'],
-            [' ', ' ', f'{education} '],
-            [' ', ' ', f'{work_experience} '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' ']
-        ]
+            ['        年', '   月', '                                            学歴・職歴'],  
+    ]
+    data.extend(education_data)  # 学歴データを追加
+
+        
     table = Table(data, colWidths=(25*mm, 14*mm, 121*mm), rowHeights=7.5*mm)
     table.setStyle(TableStyle([
             ('FONT', (0, 0), (-1, -1), 'HeiseiKakuGo-W5', 11),
@@ -222,24 +311,11 @@ def print_string(pdf_canvas):
     # (7)学歴・職歴、免許・資格
     data = [ 
             ['        年', '   月', '                                            学歴・職歴'],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            ['        年', '   月', '                                            免許・資格'],
-            [' ', ' ', f'{licenses} '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-            [' ', ' ', ' '],
-        ]
+    ]
+    data.extend(work_experience_data)  # 職歴データを追加
+    data.append(['        年', '   月', '                                            免許・資格'])
+    data.extend(license_data)  # 免許・資格データを追加
+
     table = Table(data, colWidths=(25*mm, 14*mm, 121*mm), rowHeights=7.5*mm)
     table.setStyle(TableStyle([
             ('FONT', (0, 0), (-1, -1), 'HeiseiKakuGo-W5', 11),
@@ -294,7 +370,7 @@ if st.button("履歴書生成"):
         )
     else:
         formatted_statement = get_formatted_text(
-            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章を200文字程度で生成してください。{skills}{licenses}{about_company}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章を200文字程度で生成してください。{skills}{about_company}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
         )
     st.markdown(f"**自己PR:** {formatted_statement}")
 
