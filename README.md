@@ -28,13 +28,13 @@ python -m venv .venv
 4.仮想環境をアクティベートする:
 
  ``` cmd
-### Windows command prompt
+# Windows command prompt
 .venv\Scripts\activate.bat
 
-### Windows PowerShell(windowsユーザーはPowerShellの使用を推奨)
+# Windows PowerShell(windowsユーザーはPowerShellの使用を推奨)
 .venv\Scripts\Activate.ps1
 
-### macOS and Linux
+# macOS and Linux
 source .venv/bin/activate
 ```
 
