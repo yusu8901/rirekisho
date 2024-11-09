@@ -1,33 +1,50 @@
-前提条件
+### 前提条件
 以下のソフトウェアがマシンにインストールされていることを確認してください：
 
 Git
-Python 3.7以上
+
+Python 
+
 Streamlit
-インストール手順
-リポジトリをクローンする:
 
+reportlab
+
+python-dotenv
+
+### インストール手順
+1.リポジトリをクローンする:
+``` cmd
 git clone https://github.com/yusu8901/rirekisho
-仮想環境を作成する:
+``` 
 
+2.仮想環境を作成する:
+``` cmd
 python -m venv .venv
-仮想環境をアクティベートする:
+``` 
 
-# Windows command prompt
+3.仮想環境をアクティベートする:
+
+ ``` cmd
+### Windows command prompt
 .venv\Scripts\activate.bat
 
-# Windows PowerShell(windowsユーザーはPowerShellの使用を推奨)
+### Windows PowerShell(windowsユーザーはPowerShellの使用を推奨)
 .venv\Scripts\Activate.ps1
 
-# macOS and Linux
+### macOS and Linux
 source .venv/bin/activate
-必要な依存関係をインストールする:
+```
 
+4.必要な依存関係をインストールする:
+``` cmd
 pip install -r requirements.txt
-.env.sampleファイルを.envファイルに変更後、ファイル内の"YOUR_API_KEY_HERE"を取得したOpenAI APIキーで上書きする:
-
+``` 
+5.'.env.sample'ファイルを'.env'ファイルに変更後、ファイル内の"YOUR_API_KEY_HERE"を取得したOpenAI APIキーで上書きする:
+``` cmd
 OPENAI_API_KEY="YOUR_API_KEY_HERE"
-Streamlitアプリケーションを実行する:
-
+``` 
+6.Streamlitアプリケーションを実行する:
+``` cmd
 streamlit run rirekisho.py
+``` 
 streamlitでアプリを起動したい場合はstreamlit run ○○.pyを実行すること。
