@@ -81,6 +81,11 @@ if "education" not in st.session_state:
 if "education_count" not in st.session_state:
     st.session_state.education_count = 1  # 初期値は1つ目のエントリ
 
+# ボタンが押されたときの処理
+if st.button("学歴を追加") and st.session_state.education_count < 19:
+    st.session_state.education.append({"year": "", "month": "", "description": ""})
+    st.session_state.education_count += 1  # カウントをインクリメント
+
 # 学歴入力欄の表示
 for i, education_entry in enumerate(st.session_state.education):
     col1, col2, col3 = st.columns([1, 1, 2])
@@ -88,10 +93,7 @@ for i, education_entry in enumerate(st.session_state.education):
     education_entry["month"] = col2.text_input(f"学歴 {i + 1} - 月", value=education_entry["month"], key=f"education_month_{i}")
     education_entry["description"] = col3.text_input(f"学歴 {i + 1} - 詳細", value=education_entry["description"], key=f"education_description_{i}")
 
-# ボタンが押されたときの処理
-if st.button("学歴を追加") and st.session_state.education_count < 19:
-    st.session_state.education.append({"year": "", "month": "", "description": ""})
-    st.session_state.education_count += 1  # カウントをインクリメント
+
 
 # 必要なエントリ数に満たない場合、空のエントリを追加
 while len(st.session_state.education) < st.session_state.education_count:
@@ -105,6 +107,11 @@ if "work_experience" not in st.session_state:
 if "work_experience_count" not in st.session_state:
     st.session_state.work_experience_count = 1  # 初期値は1つ目のエントリ
 
+# ボタンが押されたときの処理
+if st.button("職歴を追加") and st.session_state.work_experience_count < 8:
+    st.session_state.work_experience.append({"year": "", "month": "", "description": ""})
+    st.session_state.work_experience_count += 1  # カウントをインクリメント
+
 # 職歴入力欄の表示
 for i, work_entry in enumerate(st.session_state.work_experience):
     col1, col2, col3 = st.columns([1, 1, 2])
@@ -112,10 +119,7 @@ for i, work_entry in enumerate(st.session_state.work_experience):
     work_entry["month"] = col2.text_input(f"職歴 {i + 1} - 月", value=work_entry["month"], key=f"work_month_{i}")
     work_entry["description"] = col3.text_input(f"職歴 {i + 1} - 詳細", value=work_entry["description"], key=f"work_description_{i}")
 
-# ボタンが押されたときの処理
-if st.button("職歴を追加") and st.session_state.work_experience_count < 8:
-    st.session_state.work_experience.append({"year": "", "month": "", "description": ""})
-    st.session_state.work_experience_count += 1  # カウントをインクリメント
+
 
 # 必要なエントリ数に満たない場合、空のエントリを追加
 while len(st.session_state.work_experience) < st.session_state.work_experience_count:
@@ -130,6 +134,11 @@ if "licenses" not in st.session_state:
 if "licenses_count" not in st.session_state:
     st.session_state.licenses_count = 1  # 初期値は1つ目のエントリ
 
+# ボタンが押されたときの処理
+if st.button("免許・資格を追加") and st.session_state.licenses_count < 19:
+    st.session_state.licenses.append({"year": "", "month": "", "description": ""})
+    st.session_state.licenses_count += 1  # カウントをインクリメント
+
 # 免許・資格入力欄の表示
 for i, license_entry in enumerate(st.session_state.licenses):
     col1, col2, col3 = st.columns([1, 1, 2])
@@ -137,10 +146,7 @@ for i, license_entry in enumerate(st.session_state.licenses):
     license_entry["month"] = col2.text_input(f"免許・資格 {i + 1} - 月", value=license_entry["month"], key=f"license_month_{i}")
     license_entry["description"] = col3.text_input(f"免許・資格 {i + 1} - 詳細", value=license_entry["description"], key=f"license_description_{i}")
 
-# ボタンが押されたときの処理
-if st.button("免許・資格を追加") and st.session_state.licenses_count < 19:
-    st.session_state.licenses.append({"year": "", "month": "", "description": ""})
-    st.session_state.licenses_count += 1  # カウントをインクリメント
+
 
 # 必要なエントリ数に満たない場合、空のエントリを追加
 while len(st.session_state.licenses) < st.session_state.licenses_count:
@@ -389,18 +395,18 @@ def print_string(pdf_canvas):
 
 # Streamlitアプリケーション
 
-st.write("下のボタンをクリックすると、履歴書フォーマットのPDFが生成されます。自己PRはAIによって編集されます。")
+st.write("\下のボタンをクリックすると、履歴書フォーマットのPDFが生成されます。自己PRはAIによって編集されます。")
 
-if st.button("履歴書生成"):
+if st.button("自己PR生成・履歴書生成"):
     about_company = get_page_text(company_homepage)
 
     if personal_statement:
         formatted_statement = get_formatted_text(
-            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は出力しないでください。編集前文「 {personal_statement}」　志望先会社概要「{about_company}"
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章に200文字程度で編集してください。出力は本文のみで、他の文章は絶対に出力しないでください。編集前文[{personal_statement}],スキル：[{skills}]志望先会社概要[{about_company}]"
         )
     else:
         formatted_statement = get_formatted_text(
-            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章を200文字程度で生成してください。{skills}{about_company}を参考にしてください。出力は本文のみで、他の文章は出力しないでください。"
+            f"履歴書の自己PR欄に使用するため、簡潔で魅力的な文章を200文字程度で生成してください。スキル：{skills}、志望先会社概要：{about_company}を参考にしてください。出力は本文のみで、他の文章は絶対に出力しないでください。"
         )
     st.markdown(f"**自己PR:** {formatted_statement}")
 
