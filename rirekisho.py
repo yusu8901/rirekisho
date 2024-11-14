@@ -4,6 +4,8 @@ from io import BytesIO
 from PIL import Image
 import openai
 
+from PIL import Image
+
 from datetime import date
 
 from reportlab.pdfgen import canvas
@@ -13,6 +15,8 @@ from reportlab.lib.pagesizes import A4, portrait
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib.units import mm
 from reportlab.lib import colors
+
+from streamlit_cropper import st_cropper
 
 import requests
 from bs4 import BeautifulSoup
@@ -70,6 +74,8 @@ def get_page_text(url):
 
     except requests.exceptions.RequestException as e:
         return f"エラーが発生しました: {e}"
+    
+
 
 
 
@@ -80,6 +86,47 @@ st.write("入力に基づいて履歴書を作成するお手伝いをします�
 # 初期入力の収集
 company_homepage = st.text_input("志望先の会社理念ページURL")
 profile_picture = st.file_uploader("プロフィール写真をアップロード", type=["jpg", "jpeg", "png"])
+# 画像をトリミングする関数
+def crop_image(image, crop_box):
+    return image.crop(crop_box)
+
+# トリミングボックスの指定（例: 左上から右下までの座標）
+crop_box = (50, 50, 250, 250)  # 必要に応じて調整
+
+# 証明写真の処理
+if profile_picture:
+
+    image = Image.open(profile_picture)
+    width, height = image.size
+    aspect_ratio = (width, height)  # 画像の比率に合わせる
+
+    # Create a column layout for the cropper and preview
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.write("写真をクロップしてください:")
+        # Define cropping parameters
+        aspect_ratio = (3, 4)  # Standard resume photo ratio
+        cropped_img = st_cropper(
+            image,
+            realtime_update=True,
+            box_color='#0000FF',
+            
+            return_type='image'
+        )
+    
+    with col2:
+        st.write("クロップ後のプレビュー:")
+        # Resize the cropped image to standard resume photo size
+        target_size = (30*mm, 40*mm)  # Standard resume photo size
+        preview_image = cropped_img.copy()
+        preview_image.thumbnail((int(target_size[0]*3), int(target_size[1]*3)))  # Larger for preview
+        st.image(preview_image)
+        
+        # Store the cropped image in session state
+        st.session_state.cropped_image = cropped_img
+
+
 hurigana= st.text_input("ふりがな")
 name = st.text_input("氏名")
 options =['男','女']
@@ -234,6 +281,7 @@ def set_info(filename):
     pdf_canvas.setSubject("")  # 件名
     return pdf_canvas
 
+
 # 履歴書フォーマット作成
 def print_string(pdf_canvas):
     pdfmetrics.registerFont(UnicodeCIDFont('HeiseiKakuGo-W5'))
@@ -256,10 +304,11 @@ def print_string(pdf_canvas):
     # (3)証明写真
     # tableを作成
     if profile_picture:
-        image = Image.open(profile_picture)
-        image = image.resize((100, 130))  # 画像サイズを調整
+        # クロップされた画像を使用
+        cropped_image = st.session_state.cropped_image
+        cropped_image = cropped_image.resize((100, 130))  # 画像サイズを調整
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_image_file:
-            image.save(temp_image_file.name)
+            cropped_image.save(temp_image_file.name)
             pdf_canvas.drawImage(temp_image_file.name, 145*mm, 235*mm, width=30*mm, height=40*mm)
     else:
         data = [
