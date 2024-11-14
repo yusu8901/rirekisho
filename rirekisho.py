@@ -4,6 +4,8 @@ from io import BytesIO
 from PIL import Image
 import openai
 
+from datetime import date
+
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
@@ -33,6 +35,12 @@ def get_formatted_text(prompt):
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message['content']
+
+# 生年月日入力後に年齢を自動計算する関数
+def calculate_age(birth_year, birth_month, birth_day):
+    today = date.today()
+    age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
+    return age
 
 
 #ホームページ情報取得
@@ -65,11 +73,11 @@ options =['男','女']
 sex = st.selectbox("性別",options)
 
 st.write("生年月日")
-col1, col2, col3,col4 = st.columns([1, 1, 1, 1])
+col1, col2, col3 = st.columns([1, 1, 1])
 birthdate_year = col1.number_input("年", min_value=1900, max_value=2030, step=1)
 birthdate_month = col2.number_input("月", min_value=1, max_value=12, step=1)
 birthdate_day = col3.number_input("日", min_value=1, max_value=31, step=1)
-age = col4.number_input("年齢", min_value=0, max_value=100,step=1)
+age = calculate_age(birthdate_year, birthdate_month, birthdate_day)
 phone = st.text_input("電話番号")
 mail = st.text_input("メールアドレス")
 post_code=st.text_input("郵便番号(○○○-○○○○)")
