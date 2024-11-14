@@ -42,6 +42,19 @@ def calculate_age(birth_year, birth_month, birth_day):
     age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
     return age
 
+# 郵便番号から住所を取得する関数
+def get_address_from_postcode(post_code):
+    try:
+        response = requests.get(f"https://api.zipaddress.net/?zipcode={post_code}")
+        response.raise_for_status()
+        data = response.json()
+        if data['code'] == 200:
+            return data['data']['fullAddress']
+        else:
+            return "住所が見つかりません"
+    except requests.exceptions.RequestException as e:
+        return f"エラーが発生しました: {e}"
+
 
 #ホームページ情報取得
 def get_page_text(url):
@@ -81,7 +94,15 @@ age = calculate_age(birthdate_year, birthdate_month, birthdate_day)
 phone = st.text_input("電話番号")
 mail = st.text_input("メールアドレス")
 post_code=st.text_input("郵便番号(○○○-○○○○)")
-address = st.text_input("住所")
+# 郵便番号から住所を自動取得
+if post_code:
+    address = get_address_from_postcode(post_code)
+else:
+    address = ""
+
+# 住所入力
+address = st.text_input("住所", value=address)
+
 # 学歴入力欄
 st.write("学歴")
 if "education" not in st.session_state:
