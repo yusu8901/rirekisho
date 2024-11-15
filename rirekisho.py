@@ -156,16 +156,16 @@ address_hurigana= st.text_input("住所ふりがな1")
 address = st.text_input("住所1", value=address)
 
 #2つ目電話番号、メールアドレス、郵便番号、住所
-phone2 = st.text_input("電話番号2")
-mail2= st.text_input("メールアドレス2")
-post_code2=st.text_input("郵便番号2(○○○-○○○○)")
+phone2 = st.text_input("電話番号2(任意)")
+mail2= st.text_input("メールアドレス2(任意)")
+post_code2=st.text_input("郵便番号2(○○○-○○○○)(任意)")
 if post_code2:
     address2 = get_address_from_postcode(post_code2)
 else:
     address2 = ""
 
-address_hurigana2= st.text_input("住所2ふりがな")
-address2 = st.text_input("住所2", value=address2)
+address_hurigana2= st.text_input("住所2ふりがな(任意)")
+address2 = st.text_input("住所2(任意)", value=address2)
 
 
 # 学歴入力欄
