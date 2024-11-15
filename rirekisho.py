@@ -138,6 +138,8 @@ birthdate_year = col1.number_input("年", min_value=1900, max_value=2030, step=1
 birthdate_month = col2.number_input("月", min_value=1, max_value=12, step=1)
 birthdate_day = col3.number_input("日", min_value=1, max_value=31, step=1)
 age = calculate_age(birthdate_year, birthdate_month, birthdate_day)
+
+#1つ目電話番号、メールアドレス、郵便番号、住所
 phone = st.text_input("電話番号1")
 
 mail = st.text_input("メールアドレス1")
@@ -150,9 +152,10 @@ else:
     address = ""
 
 # 住所入力
-address_hurigana= st.text_input("住所ふりがな")
-address = st.text_input("住所", value=address)
+address_hurigana= st.text_input("住所ふりがな1")
+address = st.text_input("住所1", value=address)
 
+#2つ目電話番号、メールアドレス、郵便番号、住所
 phone2 = st.text_input("電話番号2")
 mail2= st.text_input("メールアドレス2")
 post_code2=st.text_input("郵便番号2(○○○-○○○○)")
