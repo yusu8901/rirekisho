@@ -164,9 +164,8 @@ if post_code2:
 else:
     address2 = ""
 
-address_hurigana2= st.text_input("住所2ふりがな(任意)")
+address_hurigana2= st.text_input("住所ふりがな2(任意)")
 address2 = st.text_input("住所2(任意)", value=address2)
-
 
 # 学歴入力欄
 st.write("学歴")
