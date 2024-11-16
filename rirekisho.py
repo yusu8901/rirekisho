@@ -49,11 +49,14 @@ def calculate_age(birth_year, birth_month, birth_day):
 # 郵便番号から住所を取得する関数
 def get_address_from_postcode(post_code):
     try:
-        response = requests.get(f"https://api.zipaddress.net/?zipcode={post_code}")
+        response = requests.get(f"https://zipcloud.ibsnet.co.jp/api/search?zipcode={post_code}")
         response.raise_for_status()
         data = response.json()
-        if data['code'] == 200:
-            return data['data']['fullAddress']
+        if data['status'] == 200:
+            result = data['results'][0]
+            address = f"{result['address1']}{result['address2']}{result['address3']}"
+            address_hurigana = f"{result['kana1']}{result['kana2']}{result['kana3']}"
+            return address, address_hurigana
         else:
             return "住所が見つかりません"
     except requests.exceptions.RequestException as e:
@@ -127,7 +130,7 @@ if profile_picture:
         st.session_state.cropped_image = cropped_img
 
 
-hurigana= st.text_input("ふりがな")
+hurigana= st.text_input("氏名フリガナ")
 name = st.text_input("氏名")
 options =['男','女']
 sex = st.selectbox("性別",options)
@@ -147,12 +150,13 @@ mail = st.text_input("メールアドレス1")
 post_code=st.text_input("郵便番号1(○○○-○○○○)")
 # 郵便番号から住所を自動取得
 if post_code:
-    address = get_address_from_postcode(post_code)
+    address, address_hurigana = get_address_from_postcode(post_code)
 else:
     address = ""
+    address_hurigana= ""
 
 # 住所入力
-address_hurigana= st.text_input("住所ふりがな1")
+address_hurigana= st.text_input("住所フリガナ1", value=address_hurigana)
 address = st.text_input("住所1", value=address)
 
 #2つ目電話番号、メールアドレス、郵便番号、住所
@@ -160,11 +164,12 @@ phone2 = st.text_input("電話番号2(任意)")
 mail2= st.text_input("メールアドレス2(任意)")
 post_code2=st.text_input("郵便番号2(○○○-○○○○)(任意)")
 if post_code2:
-    address2 = get_address_from_postcode(post_code2)
+    address2, address_hurigana2 = get_address_from_postcode(post_code2)
 else:
     address2 = ""
+    address_hurigana2= ""
 
-address_hurigana2= st.text_input("住所ふりがな2(任意)")
+address_hurigana2= st.text_input("住所フリガナ2(任意)", value=address_hurigana2)
 address2 = st.text_input("住所2(任意)", value=address2)
 
 # 学歴入力欄
@@ -258,19 +263,19 @@ personal_request = st.text_area("本人希望記入欄（特に待遇・職種�
 # 収集したデータをユーザーに確認用に表示
 st.write("### 履歴書情報のプレビュー")
 st.markdown(f"**氏名:** {name}")
-st.markdown(f"**ふりがな:** {hurigana}")
+st.markdown(f"**氏名フリガナ:** {hurigana}")
 st.markdown(f"**性別:** {sex}")
 st.markdown(f"**生年月日:** {birthdate_year}年{birthdate_month}月{birthdate_day}日")
 st.markdown(f"**年齢:** {age}歳")
 st.markdown(f"**電話番号1:** {phone}")
 st.markdown(f"**メールアドレス1:** {mail}")
 st.markdown(f"**郵便番号1:**{post_code}")
-st.markdown(f"**住所ふりがな1：**{address_hurigana}")
+st.markdown(f"**住所フリガナ1：**{address_hurigana}")
 st.markdown(f"**住所1:** {address}")
 st.markdown(f"**電話番号2:** {phone2}")
 st.markdown(f"**メールアドレス2:** {mail2}")
 st.markdown(f"**郵便番号2:**{post_code2}")
-st.markdown(f"**住所ふりがな2：**{address_hurigana2}")
+st.markdown(f"**住所フリガナ2：**{address_hurigana2}")
 st.markdown(f"**住所2:** {address2}")
 st.write("**学歴:**")
 for entry in st.session_state.education:
@@ -348,7 +353,7 @@ def print_string(pdf_canvas):
 
     # (4)プロフィール
     data = [
-        [f'ふりがな: {hurigana}', f' {sex}  '],  
+        [f'フリガナ: {hurigana}', f' {sex}  '],  
         [f'氏名: \n\n　　{name}', ''],
         [f'生年月日　　　　　　　　　{birthdate_year}年　{birthdate_month}月　　{birthdate_day}日生　（満　　{age}歳）', '']
     ]
@@ -372,9 +377,9 @@ def print_string(pdf_canvas):
 
     # (5)住所
     data = [
-        [f'ふりがな: {address_hurigana}', f'電話: {phone}'],
+        [f'フリガナ: {address_hurigana}', f'電話: {phone}'],
         [f'連絡先（〒{post_code}）\n {address}', f'E-mail: \n{mail}'],
-        [f'ふりがな: {address_hurigana2}', f'電話: {phone2}'],
+        [f'フリガナ: {address_hurigana2}', f'電話: {phone2}'],
         [f'連絡先（〒{post_code2}）\n {address2}', f'E-mail: \n{mail2}'],
     ]
     table = Table(data, colWidths=(120*mm, 40*mm), rowHeights=(7*mm, 20*mm, 7*mm, 20*mm))
