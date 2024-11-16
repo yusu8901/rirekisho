@@ -174,6 +174,10 @@ address2 = st.text_input("住所2(任意)", value=address2)
 
 # 学歴入力欄
 st.write("学歴")
+current_year = date.today().year
+grade = st.number_input("現在の学年を入力してください（卒業年度計算）", min_value=1, max_value=4, step=1)
+graduation_year = current_year+(4-grade)-2000+1
+st.write(graduation_year, "卒")
 if "education" not in st.session_state:
     st.session_state.education = [{"year": "", "month": "", "description": ""}]
 if "education_count" not in st.session_state:
