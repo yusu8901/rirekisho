@@ -86,6 +86,7 @@ def get_page_text(url):
 st.title("履歴書生成AI")
 st.write("入力に基づいて履歴書を作成するお手伝いをします。")
 
+st.title("基本情報")
 # 初期入力の収集
 company_homepage = st.text_input("志望先の会社理念ページURL")
 profile_picture = st.file_uploader("プロフィール写真をアップロード", type=["jpg", "jpeg", "png"])
@@ -172,8 +173,10 @@ else:
 address_hurigana2= st.text_input("住所フリガナ2(任意)", value=address_hurigana2)
 address2 = st.text_input("住所2(任意)", value=address2)
 
+
+
 # 学歴入力欄
-st.write("学歴")
+st.title("学歴")
 current_year = date.today().year
 grade = st.number_input("現在の学年を入力してください（卒業年度計算）", min_value=1, max_value=4, step=1)
 graduation_year = current_year+(4-grade)-2000+1
@@ -203,7 +206,7 @@ while len(st.session_state.education) < st.session_state.education_count:
 
 
 # 職歴入力欄
-st.write("職歴")
+st.title("職歴")
 if "work_experience" not in st.session_state:
     st.session_state.work_experience = [{"year": "", "month": "", "description": ""}]
 if "work_experience_count" not in st.session_state:
@@ -230,7 +233,7 @@ while len(st.session_state.work_experience) < st.session_state.work_experience_c
 
 
 # 免許・資格入力欄
-st.write("免許・資格")
+st.title("免許・資格")
 if "licenses" not in st.session_state:
     st.session_state.licenses = [{"year": "", "month": "", "description": ""}]
 if "licenses_count" not in st.session_state:
@@ -254,6 +257,8 @@ for i, license_entry in enumerate(st.session_state.licenses):
 while len(st.session_state.licenses) < st.session_state.licenses_count:
     st.session_state.licenses.append({"year": "", "month": "", "description": ""})
 
+
+st.title("その他情報")
 commuting_hours = st.number_input("通勤時間（時間）", min_value=0, max_value=24, step=1)
 commuting_minutes = st.number_input("通勤時間（分）", min_value=0, max_value=55, step=5)
 dependents = st.number_input("扶養家族（人数）", min_value=0, step=1)
