@@ -104,31 +104,26 @@ if profile_picture:
     width, height = image.size
     aspect_ratio = (width, height)  # 画像の比率に合わせる
 
-    # Create a column layout for the cropper and preview
-    col1, col2 = st.columns([2, 1])
+    # 1列レイアウトに変更
+    st.write("写真をクロップしてください:")
+    # Define cropping parameters
+    aspect_ratio = (3, 4)  # Standard resume photo ratio
+    cropped_img = st_cropper(
+        image,
+        realtime_update=True,
+        box_color='#0000FF',
+        return_type='image'
+    )
+
+    st.write("クロップ後のプレビュー:")
+    # Resize the cropped image to standard resume photo size
+    target_size = (30*mm, 40*mm)  # Standard resume photo size
+    preview_image = cropped_img.copy()
+    preview_image.thumbnail((int(target_size[0]*3), int(target_size[1]*3)))  # Larger for preview
+    st.image(preview_image)
     
-    with col1:
-        st.write("写真をクロップしてください:")
-        # Define cropping parameters
-        aspect_ratio = (3, 4)  # Standard resume photo ratio
-        cropped_img = st_cropper(
-            image,
-            realtime_update=True,
-            box_color='#0000FF',
-            
-            return_type='image'
-        )
-    
-    with col2:
-        st.write("クロップ後のプレビュー:")
-        # Resize the cropped image to standard resume photo size
-        target_size = (30*mm, 40*mm)  # Standard resume photo size
-        preview_image = cropped_img.copy()
-        preview_image.thumbnail((int(target_size[0]*3), int(target_size[1]*3)))  # Larger for preview
-        st.image(preview_image)
-        
-        # Store the cropped image in session state
-        st.session_state.cropped_image = cropped_img
+    # Store the cropped image in session state
+    st.session_state.cropped_image = cropped_img
 
 
 hurigana= st.text_input("氏名フリガナ")
