@@ -102,7 +102,7 @@ if profile_picture:
 
     image = Image.open(profile_picture)
     width, height = image.size
-    aspect_ratio = (width, height)  # 画像の比率に合わせる
+    # aspect_ratio = (width, height)  # 画像の比率に合わせる
 
     # 1列レイアウトに変更
     st.write("写真をクロップしてください:")
@@ -112,7 +112,8 @@ if profile_picture:
         image,
         realtime_update=True,
         box_color='#0000FF',
-        return_type='image'
+        return_type='image',
+        aspect_ratio=aspect_ratio
     )
 
     st.write("クロップ後のプレビュー:")
