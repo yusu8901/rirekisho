@@ -34,11 +34,16 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # ChatGPTで履歴書の詳細をフォーマットする関数
 def get_formatted_text(prompt):
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[
+            {
+                "role": "user", 
+                "content": prompt
+            }
+        ]
     )
-    return response.choices[0].message['content']
+    return response.choices[0].message.content
 
 # 生年月日入力後に年齢を自動計算する関数
 def calculate_age(birth_year, birth_month, birth_day):
